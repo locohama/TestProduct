@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+    test-web:
+        build: ./webserver
+        ports:
+            - "8030:80"
+        volumes:
+            - ../:/var/www
+        environment:
+            - DB_CONNECTION=pgsql
+            - DB_HOST=test-db
+            - DB_PORT=5432
+            - DB_DATABASE=testdb
+            - DB_USERNAME=postgres
+            - DB_PASSWORD=password1234
+            - MAIL_DRIVER=smtp
+            - MAIL_HOST=smtp
+            - MAIL_PORT=1025
+            - MAIL_ENCRYPTION=null
+            - MAIL_FROM_ADDRESS=test@gmail.com
+            - MAIL_FROM_NAME=TEST
+            - MAIL_USERNAME=null
+            - MAIL_PASSWORD=null
+            - MAIL_PRETEND=false
+    test-db:
+        image: postgres:12-alpine
+        ports:
+            - "15432:5432"
+        volumes:
+            - ./db:/docker-entrypoint-initdb.d
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=password1234
+            - PGPASSWORD=password1234
+            - POSTGRES_DB=testdb
+            - DATABASE_HOST=localhost
+    smtp:
+        container_name: smtp
+        image: schickling/mailcatcher
+        ports:
+            - "1080:1080"
+            - "1025:1025"
